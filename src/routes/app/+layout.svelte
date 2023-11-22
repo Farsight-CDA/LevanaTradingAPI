@@ -9,9 +9,11 @@
 	let chainId = 'cosmoshub-4';
 
 	const offlineSigner: Writable<(OfflineAminoSigner & OfflineDirectSigner) | null> = writable(null);
+	const client: Writable<SigningCosmWasmClient | null> = writable(null);
+	const address: Writable<string | null> = writable(null);
+
 	const rpcEndpoint = 'https://rpc-cosmoshub.blockapsis.com';
-	let client: SigningCosmWasmClient;
-	let address: string;
+	let address2: string;
 	let loading = true;
 
 	onMount(() => {
@@ -28,17 +30,29 @@
 		} else {
 			await window.keplr.enable(chainId);
 			offlineSigner.set(window.keplr.getOfflineSigner(chainId));
-			client = await SigningCosmWasmClient.connectWithSigner(rpcEndpoint, $offlineSigner!);
+			client.set(await SigningCosmWasmClient.connectWithSigner(rpcEndpoint, $offlineSigner!));
+		}
+	}
+
+	async function disconect() {
+		if (!window.keplr) {
+			throw new Error(`No Keblr Wallet injected`);
+		} else {
+			//await window.keplr.disable(chainId);
+			offlineSigner.set(null);
+			client.set(null);
+			address.set(null);
 		}
 	}
 
 	$: {
 		if ($offlineSigner) {
 			$offlineSigner.getAccounts().then((accounts) => {
-				address = accounts[0]?.address || '';
+				address.set(accounts[0]?.address || '');
 			});
 		}
 	}
+	let hover = false;
 </script>
 
 <body class="bg-slate-950 text-white">
@@ -59,19 +73,32 @@
 		</div>
 
 		{#if loading == true}
-			<button class="text-2xl m-2 p-2 rounded-xl bg-violet-900 text-white">LOADING</button>
-		{:else if address !== null}
-			<button class="text-2xl m-2 p-2 rounded-xl bg-violet-900 text-white"
-				>{address.slice(0, 8)}...{address.slice(-4)}
+			<button class="text-2xl m-2 p-2 rounded-xl text-center w-52 bg-violet-900 text-white">
+				LOADING
+			</button>
+		{:else if $address !== null && $address !== undefined}
+			<!-- svelte-ignore a11y-mouse-events-have-key-events -->
+			<button
+				class="text-2xl m-2 p-2 rounded-xl text-center w-52 bg-violet-900 text-white
+				duration-500 hover:bg-violet-400 hover:text-violet-950"
+				on:click={disconect}
+				on:mouseover={() => (hover = true)}
+				on:mouseout={() => (hover = false)}
+				>{#if hover}
+					Disconnect
+				{:else}
+					{$address ? $address.slice(0, 8) + '...' + $address.slice(-4) : ''}
+				{/if}
 			</button>
 		{:else if typeof window !== 'undefined' && window?.keplr != null}
 			<button
+				class="text-2xl m-2 p-2 rounded-xl text-center w-52 bg-violet-900 text-white
+				duration-500 hover:bg-violet-400 hover:text-violet-950"
 				on:click={() => connectToWallet()}
-				class=" text-2xl m-2 p-2 rounded-xl bg-violet-900 text-white"
 				>CONNECT
 			</button>
 		{:else}
-			<button disabled class="text-2xl m-2 p-2 rounded-xl bg-violet-900 text-white"
+			<button class="text-2xl m-2 p-2 rounded-xl text-center w-52 bg-violet-900 text-white"
 				>No Keplr Wallet
 			</button>
 		{/if}
