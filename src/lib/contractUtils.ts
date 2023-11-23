@@ -1,9 +1,12 @@
+import { fetchContracts } from './Backend';
+
 export interface Contract {
 	name: string;
 	address: string;
 }
 
 export async function getContracts(): Promise<Contract[]> {
+	await fetchContracts();
 	return await [
 		{
 			name: 'Levana Perps Market - ATOM_USD	',
