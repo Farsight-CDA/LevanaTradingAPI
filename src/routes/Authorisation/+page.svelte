@@ -87,15 +87,15 @@
 	<div class="h-96 w-full flex justify-center items-center">
 		<div class="bg-violet-900 rounded-2xl p-4">
 			<label for="contract">Select Levana Contract:</label><br />
-			<select class="text-black p-2 rounded-lg" bind:value={formData.contractAddress}>
-				<option value={undefined} selected disabled hidden>Select your option</option>
-				{#each contracts as contract}
-					<option value={contract.address}>{contract.name}</option>
+			<select id="contract" class="text-black p-2 rounded-lg" bind:value={formData.contractAddress}>
+				<option id={'0'} value={undefined} selected disabled hidden>Select your option</option>
+				{#each contracts as contract, index}
+					<option id={(index + 1).toString()} value={contract.address}>{contract.name}</option>
 				{/each}
 			</select>
 			<br />
 
-			<label for="time">Select Expiration Date:</label>
+			<label for="datepicker">Select Expiration Date:</label>
 			<div class="flex flex-row justify-between items-center" style="margin-left: 1px;">
 				<input
 					class="text-black p-1 rounded-lg"
@@ -107,18 +107,18 @@
 					min={getCurrentDate()}
 				/>
 				<div class="flex gap-2 items-center">
-					<label for="time">Infinite</label>
+					<label for="disableDate">Infinite</label>
 					<input class="h-4 w-4" type="checkbox" id="disableDate" on:change={disableDate} />
 				</div>
 			</div>
 
 			<label for="contract">Select amount:</label><br />
-			<select class="w-full text-black p-2 rounded-lg" bind:value={formData.volume}>
-				<option value={undefined} selected disabled hidden>Select max volume</option>
+			<select id="constract" class="w-full text-black p-2 rounded-lg" bind:value={formData.volume}>
+				<option id={'0'} value={undefined} selected disabled hidden>Select max volume</option>
 
-				<option value={500}>Starter 500</option>
-				<option value={500000}>Trader 50K</option>
-				<option value={Number.MAX_SAFE_INTEGER}>Whale Unlimited</option>
+				<option id={'1'} value={500}>Starter 500</option>
+				<option id={'2'} value={500000}>Trader 50K</option>
+				<option id={'3'} value={Number.MAX_SAFE_INTEGER}>Whale Unlimited</option>
 			</select>
 
 			<div class="h-14 flex flex-col justify-center mt-3">
